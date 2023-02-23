@@ -1,0 +1,187 @@
+<?php 
+
+ defined('BASEPATH') OR exit('No direct script access allowed');
+
+ class section_con extends CI_Controller 
+ {     
+      
+      function __construct()
+      {
+        parent::__construct(); 
+        $this->load->model("section_model");
+    
+      }
+
+  //  public function create() 
+  //  {
+  //     $this->load->view('include/header');
+  //      $this->load->view('Users/section'); 
+
+  //  } 
+   public function section() {
+    $page_data['get_branch'] = $this->section_model->get_branch();
+    $page_data['get_section'] = $this->section_model->get_section();
+
+    $this->load->model('section_model');
+          // $page_data['get_branch'] = $this->section_model->get_branch();
+          // $page_data['get_s'] = $this->section_model->get_section();
+          $this->form_validation->set_rules('branch_id' , 'Branch Name' , 'required');
+          // $this->form_validation->set_rules('section_id' , 'Section id' , 'required');
+          $this->form_validation->set_rules('capacity' , 'Capacity' , 'required');
+          $this->form_validation->set_rules('section_id', 'section_id', 'required');
+
+      
+          if($this->form_validation->run() == False)
+{
+
+  $this->load->view('Users/section',$page_data);
+} else 
+          {
+
+//save in database
+            $data = array();
+            // $formArray['section_name'] = $this->input->post('section_name');
+            // $formArray['capacity'] = $this->input->post('capacity');
+            // $formArray['branch_id'] = $this->input->post('branch_id');
+
+
+            $data =[
+              'branch_id' =>$this->input->post('branch_id'),
+                'section_id' =>$this->input->post('section_id'),
+                'capacity' =>$this->input->post('capacity'),
+              
+            ];   
+            $this->load->model('section_model');
+            $this->section_model->insert_section($data);
+            redirect(base_url('section_con/list_section')); 
+          } 
+          
+        
+        }
+//         public function list_section()
+// {
+//   $this->load->model('section_model');
+//   $section = $this->section_model->all();
+//   $data = array();
+//   $data['section'] = $section;
+  
+//   $this->load->view('Users/list_section',$data);
+// } 
+
+ function list_section()
+{
+  $this->load->model('section_model');
+  $section = $this->section_model->all();
+  $data = array();
+  $data['section'] = $section;
+  $this->load->view('Users/list_section',$data);
+} 
+
+
+function edit($id)
+     {
+  
+   $this->load->model('section_model');
+   $page_data['get_branch'] = $this->section_model->get_branch();
+   $page_data['get_section'] = $this->section_model->get_section();
+
+   $page_data['s'] = $this->section_model->get($id);
+  // print_r($page_data['get_pt']);die;
+
+   
+   $this->form_validation->set_rules('branch_id', 'Branch', 'required');
+   $this->form_validation->set_rules('section_id', 'Section', 'required');
+   $this->form_validation->set_rules('capacity' , 'Capacity' , 'required');
+
+  if ($this->form_validation->run() == false) {
+    $this->load->view('Users/edit_section', $page_data);
+    
+  } else {
+    //update user record
+    $formArray = array();
+    $formArray['branch_id'] = $this->input->post('branch_id');
+    $formArray['section_id'] = $this->input->post('section_id');
+    $formArray['capacity'] = $this->input->post('capacity');
+
+  $this->section_model->updateAmenity($id, $formArray);
+  $this->session->set_flashdata('success', 'Record updated successfully');
+  redirect(base_url() . 'section_con/index');
+}
+     }
+     
+
+
+
+
+
+
+     
+  // public function edit($id)
+  // {$page_data = array();
+  //   $page_data['get_branch'] = $this->section_model->get_branch();
+  //   $page_data['get_section'] = $this->section_model->get_section();
+  //   $this->load->model('section_model');
+  //   $section = $this->section_model->editsection($id);
+  //   $data = array();
+  //   $data['section'] = $section ;
+  //   //  print_r($data);exit();
+  //   $this->form_validation->set_rules('branch_name' , 'Branch Name' , 'required');
+  //   $this->form_validation->set_rules('section_name' , 'Section Name' , 'required');
+  //   $this->form_validation->set_rules('capacity' ,     'Capacity' , 'required');
+   
+   
+  //   if( $this->form_validation->run()==false){
+
+      
+  //     $this->load->view('Users/edit_section' , $page_data);
+
+  //   }else{
+  //       $formArray = array();
+  //       print_r($formArray);exit();
+  //       $formArray['branch_name']=$this->input->post('branch_name');
+  //       $formArray['section_name']=$this->input->post('section_name');
+  //       $formArray['capacity']=$this->input->post('capacity');
+     
+
+  //       $this->section_model->update($id,$formArray);
+  //       redirect(base_url() . 'section_con/list_section');
+  //   }
+
+
+
+
+
+  // }
+       
+ 
+
+  function delete($id)
+  {
+      $this->load->model('section_model');
+      $section = $this->section_model->get($id);
+      if (empty($section)) {
+      
+          redirect(base_url(). 'section_con/list_section');
+      }
+      $this->section_model->delete($id);
+  
+      redirect(base_url(). 'section_con/list_section');
+  } 
+          // public function index(){
+           
+
+          //   $this->load->view('Users/section' ,$data );
+          //   $this->load->model('section_model');
+          //   $getbranch = $this->section_model->getbranch();
+          //   // $this->load->view('section' , 'getbranch');
+  // }
+
+}
+ 
+     
+            
+          
+
+        
+
+?>
